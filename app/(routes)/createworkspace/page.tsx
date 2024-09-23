@@ -22,18 +22,34 @@ function createworkspace() {
 
     const oncreateWorkspace=async()=>{
         setloading(true);
-        const docID=Date.now();
+        const workspaceID=Date.now();
 
-        const result=await setDoc(doc(db,'workspace',docID.toString()),{
+        const result=await setDoc(doc(db,'workspace',workspaceID.toString()),{
             workspaceName:workspaceName,
             Emoji:Emoji,
             coverImage:coverImage,
             createdBy:user?.primaryEmailAddress?.emailAddress,
-            id:docID,
+            id:workspaceID,
             orgID:orgID?orgID:user?.primaryEmailAddress?.emailAddress, 
         })
+
+        const docID=uuid4();
+        await setDoc(doc(db,'workspaceDocuments',docID.toString()),{
+            workspaceID:workspaceID,
+            createdBy:user?.primaryEmailAddress?.emailAddress,
+            coverImage:coverImage,
+            Emoji:Emoji,
+            id:docID,
+            documentOutput:[],
+        });
+
+        await setDoc(doc(db,'documentOutput',docID.toString()),{
+            docID:docID,
+            output:[]
+        })
+
         setloading(false)
-        router.replace('/workspace'+docID)
+        router.replace('/workspace'+workspaceID+'/'+docID)
         console.log("data inserted");
     }
 
@@ -78,3 +94,7 @@ function createworkspace() {
 }
 
 export default createworkspace
+
+function uuid4() {
+    throw new Error('Function not implemented.')
+}
